@@ -1,0 +1,11 @@
+# Requirements for EPUB Batch Workflow Script
+
+# Python version requirement
+# Requires Python >= 3.6
+
+# Python packages
+rich>=13.0.0
+questionary>=1.10.0
+
+# Note: Calibre tools (calibre-debug, ebook-convert) must be installed separately
+# Download from: https://calibre-ebook.com/download
