@@ -143,20 +143,24 @@ def check_environment() -> bool:
 # ============================================================================
 
 def find_epub_files(path: Path, recursive: bool = False) -> List[Path]:
-    """Find all EPUB files in a directory"""
+    """Find all EPUB files in a directory (excluding .kepub.epub files)"""
     epub_files = []
 
     if path.is_file() and path.suffix.lower() == '.epub':
-        return [path]
+        # Ignore .kepub.epub files
+        if not path.name.lower().endswith('.kepub.epub'):
+            return [path]
+        else:
+            return []
 
     if path.is_dir():
         if recursive:
             for epub_path in path.rglob('*.epub'):
-                if epub_path.is_file():
+                if epub_path.is_file() and not epub_path.name.lower().endswith('.kepub.epub'):
                     epub_files.append(epub_path)
         else:
             for epub_path in path.glob('*.epub'):
-                if epub_path.is_file():
+                if epub_path.is_file() and not epub_path.name.lower().endswith('.kepub.epub'):
                     epub_files.append(epub_path)
 
     return sorted(epub_files)
