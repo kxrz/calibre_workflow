@@ -1,327 +1,108 @@
-# EPUB Batch Workflow - Interactive CLI Tool
+# EPUB Workflow Plugin for Calibre
 
-A professional Python script for automating EPUB file processing and cleanup at scale. Process single files, entire directories, or recursively scan for EPUB files with an interactive menu-driven interface.
+Automation plugin for EPUB processing with interactive menu, batch processing and recursive scanning.
 
-## Features
+**Author:** Florent Bertiaux (u/iamkxrz on Reddit)
 
-- **Interactive CLI Menu** with arrow keys and multi-step workflow
-- **Single File or Batch Processing** - process one EPUB or hundreds in a directory
-- **Recursive Scanning** - find and process EPUBs in nested folders
-- **Full Workflow Automation**:
-  - Convert EPUB to EPUB (refresh HTML with `ebook-convert`)
-  - Repair malformed HTML
-  - Beautify all files (proper indentation and formatting)
-  - Remove unused CSS rules
-  - Check and auto-fix errors
-  - Remove all embedded fonts
-  - Run full workflow in one command
-- **Verbose Logging** - clear step-by-step progress with detailed output
-- **Colored Output** - beautiful terminal interface with status indicators
-- **Environment Check** - automatically detects missing dependencies and suggests fixes
-- **Batch Progress Tracking** - see which files succeeded/failed when processing folders
+## 📋 Description
 
-## Prerequisites
+EPUB Workflow is a Calibre plugin that automates EPUB file processing with an intuitive graphical interface. It offers several processing actions that you can combine according to your needs:
 
-### 1. Install Calibre
-Download and install from https://calibre-ebook.com/download
+- **Convert EPUB to EPUB** : Refresh HTML
+- **Repair HTML** : Fix HTML errors
+- **Beautify** : Format and indent code
+- **Remove unused CSS** : Remove unused CSS
+- **Check and auto-fix errors** : Check and automatically fix errors
+- **Remove embedded fonts** : Remove embedded fonts
+- **Resize images to 480px** : Resize images for Xteink e-readers (irreversible)
 
-Verify installation:
-```bash
-which calibre-debug
-which ebook-convert
+## ✨ Features
+
+- 🎯 **Intuitive graphical interface** : Easily select actions to perform
+- 📦 **Batch processing** : Process multiple EPUBs at once
+- 🔄 **Automatic backup** : A backup copy is automatically created before any modification
+- 🌍 **Multilingual** : French and English support (follows Calibre's language)
+- ⚡ **Fast processing** : Uses Calibre's polish tools for efficient processing
+
+## 📦 Installation
+
+1. Download the `epub_workflow_plugin.zip` file
+2. Open Calibre
+3. Go to **Preferences** → **Plugins** → **Load plugin from file**
+4. Select the `epub_workflow_plugin.zip` file
+5. Restart Calibre
+
+## 🚀 Usage
+
+1. Select one or more EPUB books in your Calibre library
+2. Click on the **EPUB Workflow** icon in the toolbar (or add it via **Preferences** → **Interface** → **Toolbars**)
+3. In the configuration dialog, select the actions to perform
+4. Click **OK** to start processing
+
+### ⚠️ Important
+
+- **Automatic backup** : A backup copy (`filename_backup.epub`) is automatically created in the same folder as the original EPUB before any modification
+- **Modified file** : The file in your library will be modified with all selected actions
+- **Image resizing** : The image resizing operation is irreversible. A backup copy is always created before processing.
+
+## 🔧 Available Actions
+
+| Action | Description |
+|--------|-------------|
+| **Convert EPUB to EPUB** | Refreshes HTML by reconverting the EPUB |
+| **Repair HTML** | Fixes HTML errors in the file |
+| **Beautify** | Formats and indents HTML/CSS code |
+| **Remove unused CSS** | Removes unused CSS to reduce file size |
+| **Check and auto-fix errors** | Checks and automatically fixes detected errors |
+| **Remove embedded fonts** | Removes embedded fonts |
+| **Resize images to 480px** | Resizes images to 480px width (for Xteink e-readers) |
+
+## 📁 File Structure
+
+```
+epub_workflow_plugin/
+├── __init__.py              # Plugin entry point
+├── plugin.py                # Main plugin class
+├── config_dialog.py         # Configuration interface
+├── progress_dialog.py       # Progress dialog
+├── workflow_engine.py       # Processing engine
+├── translations.py          # Translation system
+├── images/
+│   └── epub_workflow.png    # Plugin icon
+└── README.md                # This file
 ```
 
-### 2. (macOS only) Add Calibre to PATH
-If `calibre-debug` or `ebook-convert` commands not found, add to your shell profile:
+## 🌍 Supported Languages
 
-```bash
-# For zsh (macOS default)
-echo 'export PATH="/Applications/calibre.app/Contents/MacOS:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+- **French** : If Calibre is in French
+- **English** : Default or if Calibre is in another language
 
-# For bash
-echo 'export PATH="/Applications/calibre.app/Contents/MacOS:$PATH"' >> ~/.bash_profile
-source ~/.bash_profile
-```
+## 📝 Notes
 
-Verify:
-```bash
-calibre-debug --version
-ebook-convert --version
-```
+- `.kepub.epub` files are automatically ignored
+- The plugin requires Calibre 6.0 or higher
+- The backup copy is overwritten if it already exists during a new processing
 
-### 3. Install Python Dependencies
+## 🔗 Python CLI Version
 
-```bash
-# Install required Python packages
-pip install -r requirements.txt
+A standalone Python script version is available in the **`Python-CLI`** folder for command-line use without Calibre.
 
-# Or manually:
-pip install rich questionary
-```
+## 🐛 Known Issues
 
-Verify Python version:
-```bash
-python3 --version  # Must be >= 3.6
-```
+- The plugin can only process EPUB files. If you select books in other formats, a message will invite you to convert them to EPUB first.
 
-## Quick Start
+## 📄 License
 
-### 1. Basic Usage - Single File
+GPL v3
 
-```bash
-calibre-debug -e epub_workflow.py -- ~/Desktop/mybook.epub
-```
+## 👤 Author
 
-### 2. Process All EPUBs in a Folder
+**Florent Bertiaux** (u/iamkxrz on Reddit)
 
-```bash
-calibre-debug -e epub_workflow.py -- ~/Calibre\ Library/Fiction
-```
+## 🤝 Contributing
 
-The script will prompt you to:
-- Choose file selection mode (single file, all in folder, or recursive)
-- Select which actions to perform (or run full workflow)
-- Review results with detailed logging
+Contributions are welcome! Feel free to open an issue or a pull request.
 
-### 3. Save Processed Files to New Location
+---
 
-```bash
-calibre-debug -e epub_workflow.py -- input_folder output_folder
-```
-
-## Usage Guide
-
-### Starting the Script
-
-```bash
-calibre-debug -e epub_workflow.py -- <input> [output]
-```
-
-**Arguments:**
-- `<input>`: Path to EPUB file or directory containing EPUBs
-- `[output]`: (Optional) Directory to save processed files. If omitted, files are processed in-place.
-
-### Interactive Menu
-
-Once launched, you'll see:
-
-1. **Environment Check** - Verification of all required tools
-2. **File Selection Menu**:
-   - Select single file
-   - Process all EPUBs in directory (non-recursive)
-   - Process all EPUBs recursively (all subfolders)
-
-3. **Action Selection Menu**:
-   Use arrow keys to navigate:
-   - Convert EPUB to EPUB (refresh HTML)
-   - Repair HTML
-   - Beautify all files
-   - Remove unused CSS
-   - Check and auto-fix errors
-   - Remove embedded fonts
-   - Run full workflow (all steps)
-   - Exit
-
-4. **Processing** - Watch real-time progress with verbose logging
-5. **Results Summary** - Success count, failures, and detailed logs
-
-## Available Actions
-
-### 1. Convert EPUB to EPUB
-Converts EPUB to EPUB format using `ebook-convert`, refreshing the internal HTML code. Useful for old/corrupted EPUB files.
-
-### 2. Repair HTML
-Uses Calibre's HTML5 parser to fix malformed HTML tags, unclosed elements, and invalid attributes.
-
-### 3. Beautify All Files
-Reformats HTML and CSS with proper indentation and spacing for readability.
-
-### 4. Remove Unused CSS
-Removes unused CSS rules, classes, and unreferenced stylesheets to reduce file size and complexity.
-
-### 5. Check and Auto-Fix Errors
-Runs Calibre's book checker to detect OPF errors, broken links, invalid covers, etc. Automatically fixes solvable issues.
-
-### 6. Remove Embedded Fonts
-Removes all embedded font files from the EPUB. Readers will use their default fonts instead.
-
-### 7. Run Full Workflow
-Executes all steps 1-6 in sequence automatically.
-
-## Examples
-
-### Example 1: Clean Single Book
-```bash
-calibre-debug -e epub_workflow.py -- ~/Downloads/book.epub
-# Select: Single file
-# Select: Run full workflow
-# Result: Cleaned book.epub in place
-```
-
-### Example 2: Batch Clean Library
-```bash
-calibre-debug -e epub_workflow.py -- ~/Calibre\ Library
-# Select: All EPUBs in directory (non-recursive)
-# Select: Run full workflow
-# Result: All books in library cleaned
-```
-
-### Example 3: Recursive Scan with Backup
-```bash
-mkdir ~/epub_cleaned
-calibre-debug -e epub_workflow.py -- ~/old_books ~/epub_cleaned
-# Select: All EPUBs recursively (all subfolders)
-# Select: Remove unused CSS only
-# Result: Cleaned files saved to ~/epub_cleaned, originals preserved
-```
-
-### Example 4: Check Errors Only
-```bash
-calibre-debug -e epub_workflow.py -- book.epub
-# Select: Single file
-# Select: Check and auto-fix errors
-# Result: Report of errors found and fixed
-```
-
-## Troubleshooting
-
-### Error: "calibre-debug: command not found"
-
-**Solution 1 (macOS):** Add to PATH
-```bash
-echo 'export PATH="/Applications/calibre.app/Contents/MacOS:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
-**Solution 2:** Use full path
-```bash
-/Applications/calibre.app/Contents/MacOS/calibre-debug -e epub_workflow.py -- book.epub
-```
-
-**Solution 3 (Linux):** Install Calibre package
-```bash
-sudo apt-get install calibre  # Debian/Ubuntu
-sudo yum install calibre      # RHEL/CentOS
-```
-
-### Error: "ebook-convert: command not found"
-
-Same solution as above - add Calibre to PATH.
-
-### Error: "No module named 'rich'" or "questionary"
-
-Install Python dependencies:
-```bash
-pip install -r requirements.txt
-# or
-pip install rich questionary
-```
-
-### Error: "ImportError: calibre modules not found"
-
-Ensure you're running the script with `calibre-debug`:
-```bash
-# Correct
-calibre-debug -e epub_workflow.py -- book.epub
-
-# Wrong
-python3 epub_workflow.py -- book.epub
-```
-
-### Error: "No EPUB files found in directory"
-
-- Check folder path is correct
-- Verify files have `.epub` extension (case-sensitive on Linux/macOS)
-- Check file permissions (must be readable)
-
-### Script Hangs or Stops Mid-Process
-
-- Large EPUBs may take longer - be patient
-- Check disk space (processing may temporarily use 2-3x file size)
-- Kill with Ctrl+C and try a smaller test file first
-
-## Performance Tips
-
-### Processing Speed
-- **Single file:** 30-60 seconds
-- **10 files:** 5-10 minutes
-- **100 files:** 30-60 minutes
-- **1000+ files:** 5+ hours (consider running overnight)
-
-### Optimize for Large Batches
-```bash
-# Process files in parallel (macOS/Linux)
-# Note: Requires manual setup with GNU parallel
-parallel calibre-debug -e epub_workflow.py -- {} ::: *.epub
-```
-
-## Environment Variables
-
-You can optionally set:
-
-```bash
-# Use alternate Python interpreter
-PYTHON=/usr/bin/python3 calibre-debug -e epub_workflow.py -- book.epub
-
-# Verbose debug output (shows all API calls)
-DEBUG=1 calibre-debug -e epub_workflow.py -- book.epub
-```
-
-## Supported Platforms
-
-- **macOS** 10.12+ (tested on Big Sur, Monterey, Ventura, Sonoma)
-- **Linux** (Ubuntu 18.04+, Debian 9+, etc.)
-- **Windows** (via WSL2 or native Python with Calibre)
-
-## Limitations
-
-- **DRMS/DRM books:** Cannot process DRM-protected EPUBs (Calibre limitation)
-- **Very large EPUBs:** May be slow (>100MB files) or cause memory issues
-- **Corrupted files:** Some severely corrupted EPUBs cannot be recovered
-- **Smarten punctuation:** Applied during conversion step only (Calibre limitation)
-
-## Advanced: Batch Script Wrapper
-
-Create `batch_epub.sh` for unattended processing:
-
-```bash
-#!/bin/bash
-INPUT_DIR="$1"
-OUTPUT_DIR="${2:-.}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-mkdir -p "$OUTPUT_DIR"
-
-calibre-debug -e "$SCRIPT_DIR/epub_workflow.py" -- "$INPUT_DIR" "$OUTPUT_DIR" << EOF
-3
-7
-EOF
-```
-
-Then run:
-```bash
-chmod +x batch_epub.sh
-./batch_epub.sh ~/Calibre\ Library ~/cleaned_books
-```
-
-## Support & Contributions
-
-- **Issues?** Check troubleshooting section above
-- **Calibre docs:** https://manual.calibre-ebook.com/
-- **Report bugs:** Include Python version, Calibre version, and exact error message
-
-## License
-
-This script uses Calibre's official Python API. Calibre is licensed under GPLv3.
-
-## Changelog
-
-### v1.0.0 (Initial Release)
-- Interactive CLI menu with arrow keys
-- Single file and batch processing
-- Recursive directory scanning
-- Full workflow automation
-- Verbose logging
-- Environment detection and troubleshooting
-- Support for macOS/Linux/Windows (WSL2)
+**Note** : This plugin uses Calibre's polish tools for EPUB processing. Make sure you have a recent version of Calibre installed.
