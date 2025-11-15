@@ -2,7 +2,7 @@
 
 Automation plugin for EPUB processing with interactive menu, batch processing and recursive scanning.
 
-**Author:** Florent Bertiaux (u/iamkxrz on Reddit)
+**Use this with caution. It would not break your epub, but it can.**
 
 ## 📋 Description
 
