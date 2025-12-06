@@ -171,12 +171,12 @@ def process_convert_epub(input_path: Path, output_path: Optional[Path] = None) -
 def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Optional[Callable[[str], None]] = None) -> Tuple[bool, dict]:
     """
     Traiter un fichier EPUB avec toutes les actions sélectionnées
-    
+
     Args:
         epub_path: Chemin vers le fichier EPUB
         actions: Liste des actions à effectuer
         progress_callback: Fonction optionnelle pour les messages de progression
-        
+
     Returns:
         Tuple (success, stats)
     """
@@ -202,7 +202,7 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     if epub_path.name.lower().endswith('.kepub.epub'):
         log(_('ignored_kepub'))
         return False, stats
-    
+
     # Créer une copie de sauvegarde AVANT toutes les modifications
     # Cette copie contient le fichier original intact
     backup_path = None
@@ -275,7 +275,7 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
             log(_('fonts_success', count=removed))
         else:
             log(_('fonts_no_fonts'))
-    
+
     # Resize images
     if "resize_images" in actions:
         log(_('resizing_images'))
