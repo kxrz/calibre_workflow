@@ -79,7 +79,8 @@ def process_remove_fonts(container) -> Tuple[bool, int]:
         from calibre.ebooks.oeb.polish.fonts import change_font, font_family_data
 
         fonts_data = font_family_data(container)
-        embedded_fonts = [f for f, is_embedded in fonts_data.items() if is_embedded]
+        embedded_fonts = [
+            f for f, is_embedded in fonts_data.items() if is_embedded]
 
         if embedded_fonts:
             for font_name in embedded_fonts:
@@ -90,6 +91,7 @@ def process_remove_fonts(container) -> Tuple[bool, int]:
     except Exception as e:
         print(f"Erreur lors de la suppression des polices: {e}")
         return False, 0
+
 
 def process_resize_images(container, max_width: int = 480) -> Tuple[bool, int]:
     """Resize images to max_width (for Xteink e-readers)"""
@@ -139,7 +141,8 @@ def process_resize_images(container, max_width: int = 480) -> Tuple[bool, int]:
                         resized_count += 1
 
                 except Exception as e:
-                    print(f"Erreur lors du redimensionnement de l'image {href}: {e}")
+                    print(f"Erreur lors du redimensionnement de l'image {
+                          href}: {e}")
                     continue
 
         return True, resized_count
@@ -156,7 +159,8 @@ def process_convert_epub(input_path: Path, output_path: Optional[Path] = None) -
         out_path = output_path or input_path
 
         result = subprocess.run(
-            ['ebook-convert', str(input_path), str(out_path), '--pretty-print'],
+            ['ebook-convert', str(input_path),
+             str(out_path), '--pretty-print'],
             capture_output=True,
             text=True,
             timeout=120
@@ -245,7 +249,8 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     if "beautify" in actions:
         log(_('beautifying'))
         stats["beautify"] = process_beautify(container)
-        log(_('beautify_success') if stats["beautify"] else _('beautify_error'))
+        log(_('beautify_success')
+            if stats["beautify"] else _('beautify_error'))
 
     # Remove CSS
     if "css" in actions:
@@ -296,4 +301,3 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     except Exception as e:
         log(_('saving_error', error=str(e)))
         return False, stats
-
