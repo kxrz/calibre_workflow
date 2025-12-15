@@ -79,7 +79,8 @@ def process_remove_fonts(container) -> Tuple[bool, int]:
         from calibre.ebooks.oeb.polish.fonts import change_font, font_family_data
 
         fonts_data = font_family_data(container)
-        embedded_fonts = [f for f, is_embedded in fonts_data.items() if is_embedded]
+        embedded_fonts = [
+            f for f, is_embedded in fonts_data.items() if is_embedded]
 
         if embedded_fonts:
             for font_name in embedded_fonts:
@@ -97,48 +98,53 @@ def process_resize_images(container, max_width: int = 480) -> Tuple[bool, int]:
     try:
         from PIL import Image
         from io import BytesIO
-        import re
-        
+
         resized_count = 0
-        
-        # Parcourir toutes les images dans le container
-        for item in container.manifest:
-            if item.media_type and item.media_type.startswith('image/'):
+
+        # Parcourir toutes les ressources du container via mime_map
+        for href, media_type in container.mime_map.items():
+            if media_type and media_type.startswith('image/'):
                 try:
                     # Lire l'image
-                    image_data = container.raw_data(item.href)
+                    image_data = container.raw_data(href)
                     image = Image.open(BytesIO(image_data))
-                    
+
                     # Vérifier si l'image est plus large que max_width
                     if image.width > max_width:
                         # Calculer la nouvelle hauteur en conservant le ratio
                         ratio = max_width / image.width
                         new_height = int(image.height * ratio)
-                        
+
                         # Redimensionner l'image
-                        resized_image = image.resize((max_width, new_height), Image.Resampling.LANCZOS)
-                        
+                        resized_image = image.resize(
+                            (max_width, new_height),
+                            Image.Resampling.LANCZOS
+                        )
+
                         # Sauvegarder l'image redimensionnée
                         output = BytesIO()
-                        # Conserver le format original
                         format_ext = image.format or 'JPEG'
-                        if format_ext == 'JPEG':
-                            resized_image.save(output, format='JPEG', quality=85, optimize=True)
-                        elif format_ext == 'PNG':
-                            resized_image.save(output, format='PNG', optimize=True)
+                        if format_ext.upper() == 'JPEG':
+                            resized_image.save(output, format='JPEG',
+                                               quality=85, optimize=True)
+                        elif format_ext.upper() == 'PNG':
+                            resized_image.save(output, format='PNG',
+                                               optimize=True)
                         else:
-                            # Par défaut, utiliser JPEG
+                            # Par défaut, convertir en JPEG
                             resized_image = resized_image.convert('RGB')
-                            resized_image.save(output, format='JPEG', quality=85, optimize=True)
-                        
+                            resized_image.save(output, format='JPEG',
+                                               quality=85, optimize=True)
+
                         # Mettre à jour le container avec la nouvelle image
-                        container.raw_set(item.href, output.getvalue())
+                        container.raw_set(href, output.getvalue())
                         resized_count += 1
-                        
+
                 except Exception as e:
-                    print(f"Erreur lors du redimensionnement de l'image {item.href}: {e}")
+                    print(f"Erreur lors du redimensionnement de l'image {
+                          href}: {e}")
                     continue
-        
+
         return True, resized_count
     except Exception as e:
         print(f"Erreur lors du redimensionnement des images: {e}")
@@ -153,7 +159,8 @@ def process_convert_epub(input_path: Path, output_path: Optional[Path] = None) -
         out_path = output_path or input_path
 
         result = subprocess.run(
-            ['ebook-convert', str(input_path), str(out_path), '--pretty-print'],
+            ['ebook-convert', str(input_path),
+             str(out_path), '--pretty-print'],
             capture_output=True,
             text=True,
             timeout=120
@@ -168,12 +175,12 @@ def process_convert_epub(input_path: Path, output_path: Optional[Path] = None) -
 def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Optional[Callable[[str], None]] = None) -> Tuple[bool, dict]:
     """
     Traiter un fichier EPUB avec toutes les actions sélectionnées
-    
+
     Args:
         epub_path: Chemin vers le fichier EPUB
         actions: Liste des actions à effectuer
         progress_callback: Fonction optionnelle pour les messages de progression
-        
+
     Returns:
         Tuple (success, stats)
     """
@@ -199,7 +206,7 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     if epub_path.name.lower().endswith('.kepub.epub'):
         log(_('ignored_kepub'))
         return False, stats
-    
+
     # Créer une copie de sauvegarde AVANT toutes les modifications
     # Cette copie contient le fichier original intact
     backup_path = None
@@ -242,7 +249,8 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     if "beautify" in actions:
         log(_('beautifying'))
         stats["beautify"] = process_beautify(container)
-        log(_('beautify_success') if stats["beautify"] else _('beautify_error'))
+        log(_('beautify_success')
+            if stats["beautify"] else _('beautify_error'))
 
     # Remove CSS
     if "css" in actions:
@@ -272,7 +280,7 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
             log(_('fonts_success', count=removed))
         else:
             log(_('fonts_no_fonts'))
-    
+
     # Resize images
     if "resize_images" in actions:
         log(_('resizing_images'))
@@ -293,4 +301,3 @@ def process_epub_file(epub_path: Path, actions: List[str], progress_callback: Op
     except Exception as e:
         log(_('saving_error', error=str(e)))
         return False, stats
-
