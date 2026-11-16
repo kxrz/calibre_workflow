@@ -1,95 +1,83 @@
-# EPUB Workflow Plugin for Calibre
+# EPUB Workflow for Calibre
 
-Automation plugin for EPUB processing with interactive menu, batch processing and recursive scanning.
+**Clean up and optimize your EPUB files in one click, right from Calibre.**
 
-**Use this with caution. It would not break your epub, but it can.**
+EPUB Workflow is a Calibre plugin that chains Calibre's own polishing tools (repair, beautify, remove unused CSS, strip embedded fonts, resize images…) into a single, configurable action. Select one or many books, tick the steps you want, and let it run. It was built to get lighter, cleaner EPUBs for small e-ink readers like the Xteink.
 
-## 📋 Description
+![EPUB Workflow configuration dialog in Calibre](calibre_epub.png)
 
-EPUB Workflow is a Calibre plugin that automates EPUB file processing with an intuitive graphical interface. It offers several processing actions that you can combine according to your needs:
-
-- **Convert EPUB to EPUB** : Refresh HTML
-- **Repair HTML** : Fix HTML errors
-- **Beautify** : Format and indent code
-- **Remove unused CSS** : Remove unused CSS
-- **Check and auto-fix errors** : Check and automatically fix errors
-- **Remove embedded fonts** : Remove embedded fonts
-- **Resize images to 480px** : Resize images for Xteink e-readers (irreversible)
+> [!WARNING]
+> Use with caution. The plugin should not break your EPUBs, but it can. A backup copy is created before every change.
 
 ## ✨ Features
 
-- 🎯 **Intuitive graphical interface** : Easily select actions to perform
-- 📦 **Batch processing** : Process multiple EPUBs at once
-- 🔄 **Automatic backup** : A backup copy is automatically created before any modification
-- 🌍 **Multilingual** : French and English support (follows Calibre's language)
-- ⚡ **Fast processing** : Uses Calibre's polish tools for efficient processing
+- 🎯 **Simple interface**: pick the actions you want in a dialog, or select the full workflow, then click OK
+- 📦 **Batch processing**: process as many EPUBs as you want in one go
+- 🔄 **Automatic backup**: a copy (`filename_backup.epub`) is saved next to the original before any change
+- 🌍 **English and French**: follows Calibre's interface language
+- ⚡ **Fast**: built on Calibre's own polish tools
+- 💻 **CLI version included**: a standalone script for batch jobs from the terminal (see [`Python-CLI`](Python-CLI/))
+
+## 🔧 Available actions
+
+| Action | What it does |
+| --- | --- |
+| **Convert EPUB to EPUB** | Refreshes the HTML by reconverting the EPUB |
+| **Repair HTML** | Fixes HTML errors in the file |
+| **Beautify** | Formats and indents HTML and CSS |
+| **Remove unused CSS** | Removes CSS rules no page uses, to reduce file size |
+| **Check and auto-fix errors** | Checks the book and automatically fixes the errors found |
+| **Remove embedded fonts** | Removes embedded fonts, so your reader uses its own |
+| **Resize images to 480px** | Resizes images to 480px wide, for Xteink e-readers (irreversible) |
 
 ## 📦 Installation
 
-1. Download the `epub_workflow_plugin.zip` file
-2. Open Calibre
-3. Go to **Preferences** → **Plugins** → **Load plugin from file**
-4. Select the `epub_workflow_plugin.zip` file
-5. Restart Calibre
+Requires **Calibre 6.0 or later**.
+
+1. Download [`epub_workflow_plugin.zip`](epub_workflow_plugin.zip)
+2. In Calibre, go to **Preferences** → **Plugins** → **Load plugin from file**
+3. Select `epub_workflow_plugin.zip`
+4. Restart Calibre
 
 ## 🚀 Usage
 
 1. Select one or more EPUB books in your Calibre library
-2. Click on the **EPUB Workflow** icon in the toolbar (or add it via **Preferences** → **Interface** → **Toolbars**)
-3. In the configuration dialog, select the actions to perform
+2. Click the **EPUB Workflow** icon in the toolbar (or add it via **Preferences** → **Interface** → **Toolbars**)
+3. Tick the actions you want
 4. Click **OK** to start processing
 
-### ⚠️ Important
+### Good to know
 
-- **Automatic backup** : A backup copy (`filename_backup.epub`) is automatically created in the same folder as the original EPUB before any modification
-- **Modified file** : The file in your library will be modified with all selected actions
-- **Image resizing** : The image resizing operation is irreversible. A backup copy is always created before processing.
+- The book in your library is modified in place with every selected action.
+- The backup copy is overwritten if one already exists from a previous run.
+- Image resizing cannot be undone, except by restoring the backup.
+- `.kepub.epub` files are skipped automatically.
+- Only EPUB files are processed. If you select another format, the plugin asks you to convert it to EPUB first.
 
-## 🔧 Available Actions
+## 💻 Python CLI version
 
-| Action | Description |
-|--------|-------------|
-| **Convert EPUB to EPUB** | Refreshes HTML by reconverting the EPUB |
-| **Repair HTML** | Fixes HTML errors in the file |
-| **Beautify** | Formats and indents HTML/CSS code |
-| **Remove unused CSS** | Removes unused CSS to reduce file size |
-| **Check and auto-fix errors** | Checks and automatically fixes detected errors |
-| **Remove embedded fonts** | Removes embedded fonts |
-| **Resize images to 480px** | Resizes images to 480px width (for Xteink e-readers) |
+Prefer the terminal, or need to process folders outside Calibre? The [`Python-CLI`](Python-CLI/) folder has a standalone, interactive script with single-file, batch and recursive modes. It uses Calibre's command-line tools under the hood. See its [readme](Python-CLI/readme.md) for setup.
 
-## 📁 File Structure
+## 📁 Repository structure
 
 ```
-epub_workflow_plugin/
+epub_workflow_plugin/        # Plugin source
 ├── __init__.py              # Plugin entry point
 ├── plugin.py                # Main plugin class
-├── config_dialog.py         # Configuration interface
+├── config_dialog.py         # Configuration dialog
 ├── progress_dialog.py       # Progress dialog
 ├── workflow_engine.py       # Processing engine
-├── translations.py          # Translation system
-├── images/
-│   └── epub_workflow.png    # Plugin icon
-└── README.md                # This file
+├── translations.py          # English and French strings
+└── images/
+    └── epub_workflow.png    # Plugin icon
+epub_workflow_plugin.zip     # Ready-to-install plugin
+Python-CLI/                  # Standalone command-line version
+_OLD/                        # Previous standalone script, kept for reference
 ```
 
-## 🌍 Supported Languages
+## 🤝 Contributing
 
-- **French** : If Calibre is in French
-- **English** : Default or if Calibre is in another language
-
-## 📝 Notes
-
-- `.kepub.epub` files are automatically ignored
-- The plugin requires Calibre 6.0 or higher
-- The backup copy is overwritten if it already exists during a new processing
-
-## 🔗 Python CLI Version
-
-A standalone Python script version is available in the **`Python-CLI`** folder for command-line use without Calibre.
-
-## 🐛 Known Issues
-
-- The plugin can only process EPUB files. If you select books in other formats, a message will invite you to convert them to EPUB first.
+Contributions are welcome! Feel free to open an issue or a pull request.
 
 ## 📄 License
 
@@ -97,12 +85,4 @@ GPL v3
 
 ## 👤 Author
 
-**Florent Bertiaux** (u/iamkxrz on Reddit)
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open an issue or a pull request.
-
----
-
-**Note** : This plugin uses Calibre's polish tools for EPUB processing. Make sure you have a recent version of Calibre installed.
+**Florent Bertiaux** ([bertiaux.fr](https://bertiaux.fr), u/iamkxrz on Reddit), also behind [readme.club](https://www.readme.club), the e-ink media.
